@@ -3,7 +3,9 @@ const fs = require('fs');
 const { exit } = require('process');
 let readline = require('readline');
 const config = require('./config.json');
-const query = require('./db');
+const getConnection = require('./db').getConnection;
+const query = require('./db').query;
+const releaseConnection = require('./db').releaseConnection;
 
 function readFileToArr(fReadName, callback) {
     let fRead = fs.createReadStream(fReadName);
@@ -22,8 +24,10 @@ function readFileToArr(fReadName, callback) {
 //
 readFileToArr(config["txPath"], async arr=>{
     
-
-    for(var i = 0 ;i < arr.length ;i ++){
+    await getConnection();
+    
+    //for(var i = 0 ;i < arr.length ;i ++){
+    for(var i = 0 ;i < arr.length  ;i ++){
 
         //console.log(i);
         //console.log(arr[0]);
@@ -33,8 +37,9 @@ readFileToArr(config["txPath"], async arr=>{
         //insert into txs
         let txAddSql = "insert into txs(txid,block_number,block_timestamp,is_coinbase) values(?, ?, ?,?)";
         let txAddSqlParams = [txJson["hash"],txJson["block_number"],txJson["block_timestamp"],is_coinbase];
-        await query(txAddSql,txAddSqlParams);
 
+        await query(txAddSql,txAddSqlParams);
+        
         //insert into tx_inputs TODO ....
         const txInputsJsons = txJson["inputs"];
         //console.log(txInputsJsons);
@@ -65,6 +70,7 @@ readFileToArr(config["txPath"], async arr=>{
         }
     }
 
+    releaseConnection();
     console.log("OK");
     exit(0);
 

@@ -9,6 +9,32 @@ const pool = mysql.createPool({
 })
 
 
+var myConnection = null;
+
+let getConnection = function() {
+
+
+  // 返回一个 Promise
+  return new Promise(( resolve, reject ) => {
+
+    pool.getConnection(function(err, connection) {
+
+      if (err) {
+        reject( err )
+      } else {
+        myConnection = connection;
+        resolve();
+      };
+
+    });
+
+  });
+
+
+
+
+};
+
 
 // 接收一个sql语句 以及所需的values
 // 这里接收第二参数values的原因是可以使用mysql的占位符 '?'
@@ -18,20 +44,14 @@ let query = function( sql, values ) {
   // 返回一个 Promise
   return new Promise(( resolve, reject ) => {
 
-    pool.getConnection(function(err, connection) {
-      if (err) {
+    
+    myConnection.query(sql, values, ( err, rows) => {
+
+      if ( err ) {
+        console.log("error");
         reject( err )
       } else {
-        connection.query(sql, values, ( err, rows) => {
-
-          if ( err ) {
-            reject( err )
-          } else {
-            resolve( rows )
-          }
-          // 结束会话
-          connection.release()
-        })
+        resolve( rows )
       }
     })
 
@@ -39,4 +59,15 @@ let query = function( sql, values ) {
 
 }
 
-module.exports =  query
+let releaseConnection = function() {
+   // 返回一个 Promise
+   return new Promise(( resolve, reject ) => {
+    
+    myConnection.release();
+    resolve();
+
+   })
+}
+module.exports.getConnection =  getConnection
+module.exports.releaseConnection =  releaseConnection
+module.exports.query =  query
