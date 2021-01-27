@@ -44,7 +44,6 @@ let query = function( sql, values ) {
   // 返回一个 Promise
   return new Promise(( resolve, reject ) => {
 
-    
     myConnection.query(sql, values, ( err, rows) => {
 
       if ( err ) {
@@ -58,6 +57,8 @@ let query = function( sql, values ) {
   })
 
 }
+
+
 
 let releaseConnection = function() {
    // 返回一个 Promise

@@ -27,7 +27,8 @@ readFileToArr(config["txPath"], async arr=>{
     await getConnection();
     
     //for(var i = 0 ;i < arr.length ;i ++){
-    for(var i = 0 ;i < arr.length  ;i ++){
+    const totalCnt = arr.length;
+    for(var i = 0 ;i < totalCnt  ;i ++){
 
         //console.log(i);
         //console.log(arr[0]);
@@ -39,7 +40,7 @@ readFileToArr(config["txPath"], async arr=>{
         let txAddSqlParams = [txJson["hash"],txJson["block_number"],txJson["block_timestamp"],is_coinbase];
 
         await query(txAddSql,txAddSqlParams);
-        
+
         //insert into tx_inputs TODO ....
         const txInputsJsons = txJson["inputs"];
         //console.log(txInputsJsons);
@@ -68,9 +69,14 @@ readFileToArr(config["txPath"], async arr=>{
                 await query(txOutputsAddSql,txOutputsAddSqlParams);
             }
         }
+
+        if(i > 0 && i % 1000000 == 0){
+            await releaseConnection();
+            await getConnection();
+        }
     }
 
-    releaseConnection();
+    await releaseConnection();
     console.log("OK");
     exit(0);
 
