@@ -6,32 +6,52 @@ const config = require('./config.json');
 const getConnection = require('./db').getConnection;
 const query = require('./db').query;
 const releaseConnection = require('./db').releaseConnection;
+const txPath = config["txPath"];
+const step = config["step"];
+var startNum = 0;
+const totalNum = config["num"];
 
-function readFileToArr(fReadName, callback) {
-    let fRead = fs.createReadStream(fReadName);
-    let objReadline = readline.createInterface({
-        input: fRead
-    });
-    let arr = new Array();
-    objReadline.on('line', line => {
-        arr.push(line);
-    });
-    objReadline.on('close', () => {
-        callback(arr);
-    });
+var arguments = process.argv.splice(2);
+if(arguments.length != 1){
+    console.log("paramter err !");
+    return 0;
+}else{
+    startNum = parseInt(arguments[0]);
 }
 
-//
-readFileToArr(config["txPath"], async arr=>{
-    
+let arr = new Array();
+
+function readEachJson2Arr(filePath){
+
+    // 返回一个 Promise
+    return new Promise(( resolve, reject ) => {
+  
+        arr = [];
+        let fRead = fs.createReadStream(filePath);
+        let objReadline = readline.createInterface({
+            input: fRead
+        });
+       
+        objReadline.on('line', line => {
+            arr.push(line);
+            
+        });
+        objReadline.on('close', () => {
+            //callback(arr);
+            //reject();
+            resolve();
+        });
+    });
+  
+};
+
+async function readEachJson2DB(){
+
     await getConnection();
-    
-    //for(var i = 0 ;i < arr.length ;i ++){
     const totalCnt = arr.length;
+
     for(var i = 0 ;i < totalCnt  ;i ++){
 
-        //console.log(i);
-        //console.log(arr[0]);
         const txJson = JSON.parse(arr[i]);
         const is_coinbase = txJson["is_coinbase"] ? 1:0;
 
@@ -70,14 +90,32 @@ readFileToArr(config["txPath"], async arr=>{
             }
         }
 
-        if(i > 0 && i % 1000000 == 0){
-            await releaseConnection();
-            await getConnection();
-        }
     }
 
     await releaseConnection();
-    console.log("OK");
-    exit(0);
+    arr = [];
+}
 
-});
+async function readJson2DB(){
+
+    for(var z = 0 ; z < totalNum ;z ++){
+
+        let fullIndex = startNum + z * step;
+        let fullFileName = txPath + "transactions-" + fullIndex + ".json";
+
+        await readEachJson2Arr(fullFileName);
+        //console.log(arr.length);
+        await readEachJson2DB();
+        console.log(fullFileName);
+
+    }
+
+}
+
+readJson2DB().then(() => {
+    console.log("finish ...");
+    exit(0);
+  }).catch((e) => {
+    console.log("error", e.message);
+
+  });
