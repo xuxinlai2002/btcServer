@@ -103,10 +103,12 @@ async function readJson2DB(){
         let fullIndex = startNum + z * step;
         let fullFileName = txPath + "transactions-" + fullIndex + ".json";
 
+        
         await readEachJson2Arr(fullFileName);
+        console.log("transactions-" + fullIndex + ".json" + " : " + arr.length);
         //console.log(arr.length);
         await readEachJson2DB();
-        console.log(fullFileName);
+        
 
     }
 
