@@ -8,11 +8,9 @@ const pool = mysql.createPool({
   database :  config["database"]
 })
 
-
 var myConnection = null;
 
 let getConnection = function() {
-
 
   // 返回一个 Promise
   return new Promise(( resolve, reject ) => {
@@ -27,14 +25,8 @@ let getConnection = function() {
       };
 
     });
-
   });
-
-
-
-
 };
-
 
 // 接收一个sql语句 以及所需的values
 // 这里接收第二参数values的原因是可以使用mysql的占位符 '?'
@@ -57,8 +49,6 @@ let query = function( sql, values ) {
   })
 
 }
-
-
 
 let releaseConnection = function() {
    // 返回一个 Promise
