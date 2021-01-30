@@ -11,3 +11,8 @@ truncate tx_inputs;
 truncate tx_outputs;
 
 truncate tx_addresses;
+
+4.
+
+
+
