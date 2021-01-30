@@ -88,11 +88,9 @@ async function readEachJson2Txt(fullTxsFile,fullInputsFile,fullOutputsFile){
     }
     
     //----
-    fs.openSync();
     fs.writeFileSync(fullTxsFile,txsArr.join("\n") );
     fs.writeFileSync(fullInputsFile, intputsArr.join("\n"));
     fs.writeFileSync(fullOutputsFile, outputsArr.join("\n"));
-    fs.closeSync();
 
     //----
     txsArr = [];
