@@ -11,7 +11,6 @@ CREATE TABLE `tx_inputs` (
   `spend_tx_hash` varchar(65) DEFAULT NULL COMMENT '花费交易hash',
   `spend_output_index` bigint(16) DEFAULT NULL COMMENT '花费输出index',
   `addresses` varchar(1024) DEFAULT NULL COMMENT '地址',
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 

@@ -13,7 +13,6 @@ CREATE TABLE `tx_addresses` (
   `isIn` smallint(1) DEFAULT NULL COMMENT '是否是收入 0:支出 1:收入',
   `block_number` bigint(16) DEFAULT NULL COMMENT '区块高度',
   `block_timestamp` varchar(10) DEFAULT NULL COMMENT '时间戳',
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 

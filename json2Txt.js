@@ -2,7 +2,7 @@
 const fs = require('fs');
 const { exit } = require('process');
 let readline = require('readline');
-const config = require('./config.json');
+const config = require('./json2Txt.json');
 
 const txPath = config["jsonPath"];
 const step = config["step"];
@@ -111,13 +111,10 @@ async function readJson2Txt(){
         let fullInputsFile = config["txtFile"] + "inputs-" + fullIndex + ".txt";
         let fullOutputsFile = config["txtFile"] + "outputs-" + fullIndex + ".txt";
 
-
         await readEachJson2Arr(fullFileName);
         console.log("transactions-" + fullIndex + ".json" + " : " + arr.length);
         await readEachJson2Txt(fullTxsFile,fullInputsFile,fullOutputsFile);
         
-        
-
     }
 
 }

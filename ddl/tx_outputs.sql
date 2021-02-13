@@ -11,7 +11,7 @@ CREATE TABLE `tx_outputs` (
   `output_index` int(4) DEFAULT NULL COMMENT 'output_index',
   `addresses` varchar(1024) DEFAULT NULL COMMENT '地址',
   `value` bigint(16) DEFAULT NULL COMMENT '值',
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `is_used` smallint(1) DEFAULT 0 COMMENT '是否已使用',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
