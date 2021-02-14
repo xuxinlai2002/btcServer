@@ -1,0 +1,6 @@
+{
+    "num":11,
+    "step":10000,
+    "txtPath":"/Users/xuxinlai/ela/btcServer/txt/",
+    "redisPath":"/Users/xuxinlai/ela/btcServer/redis/"
+}
