@@ -77,6 +77,7 @@ async function main() {
        let fullTxAddressFile = okPath + "tx_addresses-" + fullIndex + ".txt"; 
        fs.writeFileSync(fullTxAddressFile,arrOK.join("\n") );
 
+
        if(arrErr.length > 0){
             let fullTxAddressErr = errPath + "tx_addresses-" + fullIndex + ".err"; 
             fs.writeFileSync(fullTxAddressErr, arrErr.join("\n"));
@@ -85,7 +86,11 @@ async function main() {
        console.timeEnd('work ' + z);
 
        //del used utxo
-       await delRedis(delKeys);
+       if(delKeys.length > 0){
+            await delRedis(delKeys);
+       }
+       
+
        //del input 
        cmd = "redis-cli keys 'i*' | xargs redis-cli del"
        processLine.execSync(cmd, [], { encoding : 'utf8' });
@@ -93,7 +98,7 @@ async function main() {
        console.log("---------------------------------\n");
     }
     
-    endNum =  totalNum * step - 1
+    endNum =  startNum + totalNum * step - 1
     idxPath = okPath + "idx-" + endNum + ".txt"
     cmd = "redis-dump > " +  idxPath
     processLine.execSync(cmd, [], { encoding : 'utf8' });
@@ -104,12 +109,13 @@ async function main() {
 async function eachLoad(z){
 
     //redis out
-    const redisOutPath = redisPath + "out-" + z*step + ".txt";
+    const idxNo = startNum + z*step 
+    const redisOutPath = redisPath + "out-" + idxNo + ".txt";
     var cmd = "cat " + redisOutPath + " | redis-cli --pipe"
     processLine.execSync(cmd, [], { encoding : 'utf8' });
 
     //redis in
-    const redisInPath = redisPath + "in-" + z*step + ".txt";
+    const redisInPath = redisPath + "in-" + idxNo + ".txt";
     cmd = "cat " + redisInPath + " | redis-cli --pipe"
     processLine.execSync(cmd, [], { encoding : 'utf8' });
 
@@ -166,6 +172,9 @@ async function saveInputs(txid,block_number,block_timestamp){
             const arrL2Val = getL2Data(arrL1Val[i]);
     
             const retVal = await getValueFromOutputs(arrL2Val[1],arrL2Val[2]);
+            if(retVal == ""){
+                return
+            }
             getEachOutputFromValue(txid,block_number,block_timestamp,0,retVal);
         }
     }
@@ -178,7 +187,8 @@ async function getValueFromOutputs(txid,index){
     const baseKey = getBaseKey(txid);
     val = await getRedis(baseKey + index);
     if(val == null){
-        console.log("error input not found" + baseKey + " : " + index);
+        console.log("input not found " + baseKey + " : " + index);
+        return ""
     }
     //
     //await delRedis(baseKey + index);

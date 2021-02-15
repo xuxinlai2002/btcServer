@@ -46,3 +46,10 @@ select * from tx_addresses
 where address = '12higDjoCCNXSA95xZMWUdPvXNmkAduhWv'
 order by block_number 
 
+10.
+node redisSortTxByAddress.js 125000
+
+11.
+cat /Users/xuxinlai/ela/btcServer/rok/idx-0~119999.txt | redis-cli --pipe
+
+12.

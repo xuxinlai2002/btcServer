@@ -2,9 +2,5 @@
     "num":8,
     "step":100,
     "jsonPath":"./output/",
-    "txtFile":"/Users/xuxinlai/ela/btcServer/txt/",
-    "host":"127.0.0.1",
-    "user":"root",
-    "password":"xxl123456",
-    "database":"btcserver"
+    "txtFile":"/Users/xuxinlai/ela/btcServer/txt/"
 }
