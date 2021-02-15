@@ -41,7 +41,9 @@ async function main() {
     // }
     //console.log(data);
     const keys = ["b460c02d3e30e460","b3323954a2c0f571"]
-    await delRedis(keys)
+    //await delRedis(keys)
+    //await delRedis("i*")
+
 
 
     console.timeEnd('total ');

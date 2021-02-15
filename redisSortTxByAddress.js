@@ -1,14 +1,10 @@
 //app.js
 const { exit } = require('process');
 var processLine = require('child_process');
+let readline = require('readline');
 
 //fs
 const fs = require('fs');
-
-//db
-const getConnection = require('./db').getConnection;
-const query = require('./db').query;
-const releaseConnection = require('./db').releaseConnection;
 
 //redis
 const getRedis = require('./redis').get
@@ -28,7 +24,6 @@ var startNum = 0;
 var arguments = process.argv.splice(2);
 let arrOK = new Array();
 let arrErr = new Array();
-let delArrUTXO = new Array();
 let delKeys = new Array();
 
 if(arguments.length != 1){
@@ -38,8 +33,33 @@ if(arguments.length != 1){
     startNum = parseInt(arguments[0]);
 }
 
+let arr = new Array();
+
+function readEachData2Arr(filePath){
+
+    // 返回一个 Promise
+    return new Promise(( resolve, reject ) => {
+  
+        arr = [];
+        let fRead = fs.createReadStream(filePath);
+        let objReadline = readline.createInterface({
+            input: fRead
+        });
+       
+        objReadline.on('line', line => {
+            arr.push(line);
+            
+        });
+        objReadline.on('close', () => {
+            resolve();
+        });
+    });
+  
+};
+
 async function main() {
 
+    var cmd = ""
     console.time('total ');
     for(var z = 0 ; z < totalNum ;z ++){
 
@@ -47,81 +67,81 @@ async function main() {
         //init param
        arrOK = [];
        arrErr = [];
-       delArrUTXO = [];
        delKeys = [];
 
-       await getConnection();
+       //await getConnection();
        await eachLoad(z);
        await eachSort(z);
        
        let fullIndex = startNum + z * step; 
        let fullTxAddressFile = okPath + "tx_addresses-" + fullIndex + ".txt"; 
        fs.writeFileSync(fullTxAddressFile,arrOK.join("\n") );
-       let fullTxAddressErr = errPath + "tx_addresses-" + fullIndex + ".err"; 
-       fs.writeFileSync(fullTxAddressErr, arrErr.join("\n"));
 
-       let fullTxOutputsFile = okPath + "tx_output-" + fullIndex + ".txt"; 
-       fs.writeFileSync(fullTxOutputsFile, delArrUTXO.join("\n"));
-
-       //
-       var truncateTale = "truncate txs" 
-       await query(truncateTale,[]);
-
-       truncateTale = "truncate tx_inputs" 
-       await query(truncateTale,[]);
+       if(arrErr.length > 0){
+            let fullTxAddressErr = errPath + "tx_addresses-" + fullIndex + ".err"; 
+            fs.writeFileSync(fullTxAddressErr, arrErr.join("\n"));
+       }
        
        console.timeEnd('work ' + z);
-       await releaseConnection();
 
+       //del used utxo
        await delRedis(delKeys);
+       //del input 
+       cmd = "redis-cli keys 'i*' | xargs redis-cli del"
+       processLine.execSync(cmd, [], { encoding : 'utf8' });
+
+       console.log("---------------------------------\n");
     }
+    
+    endNum =  totalNum * step - 1
+    idxPath = okPath + "idx-" + endNum + ".txt"
+    cmd = "redis-dump > " +  idxPath
+    processLine.execSync(cmd, [], { encoding : 'utf8' });
 
     console.timeEnd('total ');
 };
 
 async function eachLoad(z){
 
-    let fullIndex = startNum + z * step;
+    //redis out
+    const redisOutPath = redisPath + "out-" + z*step + ".txt";
+    var cmd = "cat " + redisOutPath + " | redis-cli --pipe"
+    processLine.execSync(cmd, [], { encoding : 'utf8' });
 
-    const loadTxsData = 'LOAD DATA LOCAL INFILE ? INTO TABLE txs FIELDS TERMINATED BY ";" (txid, block_number,block_timestamp,is_coinbase)'
-    let fullTxsFile = txPath + "txs-" + fullIndex + ".txt";    
-    await query(loadTxsData,[fullTxsFile]);
-    
-    const loadInputsData = 'LOAD DATA LOCAL INFILE ? INTO TABLE tx_inputs FIELDS TERMINATED BY ";" (txid,addresses,spend_tx_hash,spend_output_index)'
-    let fullInputsFile = txPath + "inputs-" + fullIndex + ".txt";    
-    await query(loadInputsData,[fullInputsFile]);
-    console.log("txs-" + fullIndex + ".txt" + " " + z);
+    //redis in
+    const redisInPath = redisPath + "in-" + z*step + ".txt";
+    cmd = "cat " + redisInPath + " | redis-cli --pipe"
+    processLine.execSync(cmd, [], { encoding : 'utf8' });
 
-    await loadRedis(z);
-
-}
-
-async function loadRedis(z){
-
-    const fullRedisPath = redisPath + "out-" + z*step + ".txt";
-    const cmd = "cat " + fullRedisPath + " | redis-cli --pipe"
-    
-    var cmdRet = processLine.execSync(cmd, [], { encoding : 'utf8' });
-    console.log(cmdRet.toString().replace(/(^\s*)|(\s*$)/g, ""));    
+    console.log("redis over " );
 
 }
 
 async function eachSort(z){
     
-    //select from txs
-    //let queryTxSql = "select txid,block_number,block_timestamp,is_coinbase from txs order by block_number,block_timestamp";
-    let queryTxSql = "select txid,block_number,block_timestamp,is_coinbase from txs order by block_number,block_timestamp,id";
-    const txs = await query(queryTxSql);
-    const txCnt = txs.length;
+    let fullIndex = startNum + z * step;
+    let fullTxsFile = txPath + "txs-" + fullIndex + ".txt";  
 
+    await readEachData2Arr(fullTxsFile);
+    const txCnt = arr.length;
+
+    console.log("outputs-" + fullIndex + ".txt" + " : " + txCnt);
     for(var i = 0 ;i < txCnt ; i ++){
-
-        if(txs[i].is_coinbase == 1){
-            await dealCoinbase(txs[i].txid,txs[i].block_number,txs[i].block_timestamp,1);
+        
+        var txsArr = getL2Data(arr[i]);
+        if(txsArr.length != 4){
+            console.log("txs file data error lineNo :" + i);
         }else{
-            await dealTx(txs[i].txid,txs[i].block_number,txs[i].block_timestamp,0);
+            if(txsArr[3].is_coinbase == 1){
+                await dealCoinbase(txsArr[0],txsArr[1],txsArr[2],1);
+            }else{
+                await dealTx(txsArr[0],txsArr[1],txsArr[2],0);
+            }
         }
     }
+
+    arr = [];
+
 }
 
 async function dealCoinbase(txid,block_number,block_timestamp,is_coinbase){
@@ -136,19 +156,23 @@ async function dealTx(txid,block_number,block_timestamp,is_coinbase){
 
 async function saveInputs(txid,block_number,block_timestamp){
 
-    let queryInputSql = "select spend_tx_hash,spend_output_index from tx_inputs where txid = ?";
-    let queryInputSqlParams = [txid];
+    let inputKey = "i" + getBaseKey(txid);
+    const val = await getRedis(inputKey);
+    if(val != null){
 
-    const txInput = await query(queryInputSql,queryInputSqlParams);
-    const txInputCnt = txInput.length;
-
-    for(var i = 0 ;i < txInputCnt ; i ++){
-        const retVal = await getValueFromOutputs(txInput[i].spend_tx_hash,txInput[i].spend_output_index);
-        getEachOutputFromValue(txid,block_number,block_timestamp,0,retVal);
+        const arrL1Val = getL1Data(val);
+        let txInputCnt = arrL1Val.length;
+        for(var i = 0 ;i < txInputCnt ; i ++){
+            const arrL2Val = getL2Data(arrL1Val[i]);
+    
+            const retVal = await getValueFromOutputs(arrL2Val[1],arrL2Val[2]);
+            getEachOutputFromValue(txid,block_number,block_timestamp,0,retVal);
+        }
     }
 }
 
 async function getValueFromOutputs(txid,index){
+
 
     //
     const baseKey = getBaseKey(txid);
@@ -161,6 +185,7 @@ async function getValueFromOutputs(txid,index){
     delKeys.push(baseKey + index);
 
     return val;
+
 }
 
 
@@ -190,21 +215,15 @@ async function saveOputs(txid,block_number,block_timestamp,is_coinbase){
 
 }
 
-function getBaseKey(txid){
-    return txid.substr(0,15);
-}
-
-
 function getEachOutputFromValue(txid,block_number,block_timestamp,isIn,val){
 
-    const retArr = val.split(";");
+    const retArr = getL2Data(val);
 
     if(retArr.length != 2){
         console.log("redis data error :" + val);
         return;
     }
-    //just for test
-    //const addresses = retArr[0].repalce(/n/,"nonstandard");
+
     const addresses = retArr[0]
     const value = isIn? retArr[1]: -retArr[1];
 
@@ -228,9 +247,22 @@ function getEachOutputFromValue(txid,block_number,block_timestamp,isIn,val){
     }
 
 }
+
+function getBaseKey(txid){
+    return txid.substr(0,15);
+}
+
+function getL1Data(val){
+    return val.split("-");
+}
+
+function getL2Data(val){
+    return val.split(";");
+}
+
   
 main().then(() => {
-    console.log("OK");
+    //console.log("OK");
     exit(0);
 }).catch((e) => {
     console.log("Error", e);

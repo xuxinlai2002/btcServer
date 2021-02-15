@@ -4,7 +4,7 @@ let readline = require('readline');
 
 const { exit } = require('process');
 
-const config = require('./redisOutput.json');
+const config = require('./redisData.json');
 const txtPath = config["txtPath"];
 const redisPath = config["redisPath"];
 const step = config["step"];
@@ -20,8 +20,9 @@ if(arguments.length != 1){
 }
 
 let arr = new Array();
+var out = [];
 
-function readEachJson2Arr(filePath){
+function readEachTxt2Arr(filePath){
 
     // 返回一个 Promise
     return new Promise(( resolve, reject ) => {
@@ -43,7 +44,7 @@ function readEachJson2Arr(filePath){
   
 };
 
-async function readEachTxt2Redis(outFile){
+async function readEachOuput2Redis(outFile){
 
     const totalCnt = arr.length;
     var out = [];
@@ -60,24 +61,77 @@ async function readEachTxt2Redis(outFile){
     fs.writeFileSync(outFile,out.join("\n") );
 }
 
+async function readEachInput2Redis(outFile){
+
+    const totalCnt = arr.length;
+    var resultVal = "";
+    out = [];
+    for(var i = 0 ;i < totalCnt  ; i ++){
+
+        let outArr = arr[i].split(";")
+        var outKey =  outArr[0].substr(0,15)
+        let outVal = outArr[1] + ";" + outArr[2] + ";" + outArr[3];
+        
+       
+        if(resultVal == ""){
+            resultVal = outVal
+        }else{
+            resultVal = resultVal + "-" + outVal;
+        }
+
+        if(i + 1 < totalCnt){
+            let outArrNext = arr[i + 1].split(";")
+            let outKeyNext = outArrNext[0].substr(0,15)
+
+            if(outKeyNext != outKey){
+                setKeyVal(outKey,resultVal);
+                resultVal = ""
+            }
+        }else{
+            setKeyVal(outKey,resultVal);
+            resultVal = ""
+        }
+
+    }
+    
+    fs.writeFileSync(outFile,out.join("\n") );
+    out = [];
+}
+
+function setKeyVal(outKey,resultVal){
+
+    let newOutKey = "i" + outKey;
+    let outStr = "set " + newOutKey + " " + resultVal ;
+    out.push(outStr);
+}
+
+
 async function readTxt2Redis(){
 
-    
+    console.time('total');
     for(var z = 0 ; z < totalNum ;z ++){
 
         let fullIndex = startNum + z * step;
+
         let fullOutputsFile = txtPath + "outputs-" + fullIndex + ".txt";
+        let fullinputsFile = txtPath + "inputs-" + fullIndex + ".txt";
         let fullOutRedisFile = redisPath + "out-" + fullIndex + ".txt";
+        let fullInRedisFile = redisPath + "in-" + fullIndex + ".txt";
 
-
-        await readEachJson2Arr(fullOutputsFile);
+        //output
+        await readEachTxt2Arr(fullOutputsFile);
         console.log("outputs-" + fullIndex + ".txt" + " : " + arr.length);
-
-        await readEachTxt2Redis(fullOutRedisFile);
-
+        await readEachOuput2Redis(fullOutRedisFile,0);
         arr = [];
-        
+
+        //input
+        await readEachTxt2Arr(fullinputsFile);
+        console.log("inputs-" + fullIndex + ".txt" + " : " + arr.length);
+        await readEachInput2Redis(fullInRedisFile);
+        arr = [];
     }
+
+    console.timeEnd('total');
 
 }
 
@@ -86,5 +140,4 @@ readTxt2Redis().then(() => {
     exit(0);
   }).catch((e) => {
     console.log("error", e.message);
-
-  });
+});

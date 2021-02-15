@@ -33,8 +33,16 @@ redis-dump > dump.txt
 
 7.
 ALTER TABLE `tx_inputs` ADD INDEX input_tx ( `txid` ) 
+show index from tx_outputs;
 
+8.
+select address ,count(*) cnt from tx_addresses 
+GROUP BY address 
+HAVING cnt > 3
 
-
-
+9.
+12higDjoCCNXSA95xZMWUdPvXNmkAduhWv
+select * from tx_addresses 
+where address = '12higDjoCCNXSA95xZMWUdPvXNmkAduhWv'
+order by block_number 
 
