@@ -4,8 +4,8 @@ let readline = require('readline');
 
 const { exit } = require('process');
 
-const config = require('./redisData.json');
-const txtPath = config["txtPath"];
+const config = require('./config.json');
+const txtPath = config["txtFile"];
 const redisPath = config["redisPath"];
 const step = config["step"];
 var startNum = 0;
@@ -70,7 +70,7 @@ async function readEachInput2Redis(outFile){
 
         let outArr = arr[i].split(";")
         var outKey =  outArr[0].substr(0,15)
-        let outVal = outArr[1] + ";" + outArr[2] + ";" + outArr[3];
+        let outVal = outArr[1] + ";" + outArr[2].substr(0,15) + ";" + outArr[3];
         
        
         if(resultVal == ""){

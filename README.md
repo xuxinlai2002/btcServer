@@ -53,3 +53,18 @@ node redisSortTxByAddress.js 125000
 cat /Users/xuxinlai/ela/btcServer/rok/idx-0~119999.txt | redis-cli --pipe
 
 12.
+
+cat testBin.txt | redis-cli --pipe
+
+13.
+HLEN xxxx
+
+14.
+导入
+导出
+https://blog.csdn.net/wppwpp1/article/details/108109464
+
+
+
+
+

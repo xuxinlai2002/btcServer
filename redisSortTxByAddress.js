@@ -11,7 +11,7 @@ const getRedis = require('./redis').get
 const delRedis = require('./redis').del
 
 //config
-const config = require('./redisSortTxByAddress.json');
+const config = require('./config.json');
 const redisPath = config["redisPath"];
 const totalNum = config["num"];
 const step = config["step"];
@@ -98,10 +98,10 @@ async function main() {
        console.log("---------------------------------\n");
     }
     
-    endNum =  startNum + totalNum * step - 1
-    idxPath = okPath + "idx-" + endNum + ".txt"
-    cmd = "redis-dump > " +  idxPath
-    processLine.execSync(cmd, [], { encoding : 'utf8' });
+    // endNum =  startNum + totalNum * step - 1
+    // idxPath = okPath + "idx-" + endNum + ".txt"
+    // cmd = "redis-dump > " +  idxPath
+    // processLine.execSync(cmd, [], { encoding : 'utf8' });
 
     console.timeEnd('total ');
 };

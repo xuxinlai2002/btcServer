@@ -1,6 +1,7 @@
 var redis = require('redis');
 const config = require('./redis.json');
 
+
 host = config["host"]
 port = config["port"]
 password = config["password"]
