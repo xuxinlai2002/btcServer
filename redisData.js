@@ -11,6 +11,10 @@ const step = config["step"];
 var startNum = 0;
 const totalNum = config["num"];
 
+var en = require('int-encoder');
+var encodeTx = require("./heler").encodeTx;
+var encodeInt = require("./heler").encodeInt;
+
 var arguments = process.argv.splice(2);
 if(arguments.length != 1){
     console.log("paramter err !");
@@ -47,15 +51,23 @@ function readEachTxt2Arr(filePath){
 async function readEachOuput2Redis(outFile){
 
     const totalCnt = arr.length;
-    var out = [];
+    out = [];
 
     for(var i = 0 ;i < totalCnt  ; i ++){
 
         let outArr = arr[i].split(";")
-        let outKey =  outArr[0].substr(0,15) + outArr[1]
-        let outVal = outArr[2].replace(/nonstandard/,"n") + ";" + outArr[3];
-        let outStr = "set " + outKey + " " + outVal ;
-        out.push(outStr);
+        
+        let baseKey = encodeTx(outArr[0]);
+        let subKey =  Number(outArr[1]).toString(16);
+        let outKey = baseKey  + subKey
+
+        var address = outArr[2]
+        if(address.indexOf("nonstandard") != -1){
+            address = "n" + en.encode(address.replace(/nonstandard/,""),16);
+        }
+
+        let outVal = address + ";" + encodeInt(outArr[3]);
+        setKeyVal("out",outKey,outVal);
     }
     
     fs.writeFileSync(outFile,out.join("\n") );
@@ -69,26 +81,26 @@ async function readEachInput2Redis(outFile){
     for(var i = 0 ;i < totalCnt  ; i ++){
 
         let outArr = arr[i].split(";")
-        var outKey =  outArr[0].substr(0,15)
-        let outVal = outArr[1] + ";" + outArr[2].substr(0,15) + ";" + outArr[3];
+
+        let outKey = encodeTx(outArr[0])
+        let outVal = encodeTx(outArr[2]) + ";" +  Number(outArr[3]).toString(16);
         
-       
         if(resultVal == ""){
             resultVal = outVal
         }else{
-            resultVal = resultVal + "-" + outVal;
+            resultVal = resultVal + ":" + outVal;
         }
 
         if(i + 1 < totalCnt){
             let outArrNext = arr[i + 1].split(";")
-            let outKeyNext = outArrNext[0].substr(0,15)
+            let outKeyNext = encodeTx(outArrNext[0])
 
             if(outKeyNext != outKey){
-                setKeyVal(outKey,resultVal);
+                setKeyVal("in",outKey,resultVal);
                 resultVal = ""
             }
         }else{
-            setKeyVal(outKey,resultVal);
+            setKeyVal("in",outKey,resultVal);
             resultVal = ""
         }
 
@@ -98,13 +110,11 @@ async function readEachInput2Redis(outFile){
     out = [];
 }
 
-function setKeyVal(outKey,resultVal){
+function setKeyVal(key,outKey,resultVal){
 
-    let newOutKey = "i" + outKey;
-    let outStr = "set " + newOutKey + " " + resultVal ;
+    let outStr = "HSET " + key + " " + outKey + " " + resultVal ;
     out.push(outStr);
 }
-
 
 async function readTxt2Redis(){
 

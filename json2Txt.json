@@ -1,6 +1,6 @@
 {
-    "num":8,
-    "step":100,
+    "num":21,
+    "step":1000,
     "jsonPath":"./output/",
     "txtFile":"/Users/xuxinlai/ela/btcServer/txt/"
 }

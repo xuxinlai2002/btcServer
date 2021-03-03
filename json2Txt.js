@@ -2,7 +2,7 @@
 const fs = require('fs');
 const { exit } = require('process');
 let readline = require('readline');
-const config = require('./json2Txt.json');
+const config = require('./config.json');
 
 const txPath = config["jsonPath"];
 const step = config["step"];
@@ -78,7 +78,7 @@ async function readEachJson2Txt(fullTxsFile,fullInputsFile,fullOutputsFile){
             const txOutputsJson = txOutputsJsons[j];
             const value = txOutputsJson["value"];
 
-            if(value > 0){
+            if(value >= 0){
                 const addresses = txOutputsJson["addresses"].join(',');
                 let outputsStr = txJson["hash"]+";"+txOutputsJson["index"] +";"+addresses+";"+txOutputsJson["value"];
                 outputsArr.push(outputsStr);

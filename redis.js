@@ -1,7 +1,6 @@
 var redis = require('redis');
 const config = require('./redis.json');
 
-
 host = config["host"]
 port = config["port"]
 password = config["password"]
@@ -21,6 +20,71 @@ function get(key) {
         resovle(reply);
       });
     });
+}
+
+function hget(key,field) {
+
+  return new Promise((resovle, reject) => {
+
+      client.hget(key,field,(err, reply) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      }
+      resovle(reply);
+    });
+
+  });
+}
+
+
+function hset(key,field,val) {
+  return new Promise((resovle, reject) => {
+      client.hset(key,field,val,(err, reply) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      }
+      resovle(reply);
+    });
+  });
+}
+
+
+function hdel(key,field) {
+  return new Promise((resovle, reject) => {
+      client.hdel(key,field,(err, reply) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      }
+      resovle(reply);
+    });
+  });
+}
+
+function hexists(key) {
+  return new Promise((resovle, reject) => {
+      client.hexists(key,field,(err, reply) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      }
+      resovle(reply);
+    });
+  });
+}
+
+function hlen(key) {
+  return new Promise((resovle, reject) => {
+      client.hlen(key,(err, reply) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      }
+      resovle(reply);
+    });
+  });
 }
 
 function keys(key) {
@@ -48,5 +112,12 @@ function del(key) {
 }
 
 module.exports.get =  get
+
 module.exports.del =  del
 module.exports.keys =  keys
+
+module.exports.hget =  hget
+module.exports.hset =  hset
+module.exports.hdel =  hdel
+module.exports.hlen =  hlen
+module.exports.hexists =  hexists

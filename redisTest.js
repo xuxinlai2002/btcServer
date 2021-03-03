@@ -13,6 +13,7 @@ const okPath = config["okFile"];
 const errPath = config["errFile"];
 var en = require('int-encoder');
 
+var decodeInt = require('./heler').decodeInt
 //redis
 const getRedis = require('./redis').get
 const delRedis = require('./redis').del;
@@ -58,21 +59,27 @@ async function main() {
     // console.log(strToBase64);
     // console.log("d2");
 
-    const org1 = '1HfMTmxPq1UUaXxzWFmtoiut3dPEDs6VYT';
+    // const org1 = '1HfMTmxPq1UUaXxzWFmtoiut3dPEDs6VYT';
 
     
-    console.log("org1 " + org1 + " : " +  org1.length);
-    rrg1 = en.encode(org1, 16);
-    console.log("rrg1 " + rrg1 + " : " +  rrg1.length);
+    // console.log("org1 " + org1 + " : " +  org1.length);
+    // rrg1 = en.encode(org1, 16);
+    // console.log("rrg1 " + rrg1 + " : " +  rrg1.length);
 
-    drg1 = en.decode(rrg1, 16);
-    console.log("drg1 " + drg1 + " : " +  drg1.length);
+    // drg1 = en.decode(rrg1, 16);
+    // console.log("drg1 " + drg1 + " : " +  drg1.length);
+
+    // test  = "0"
+    // hex = Number(test).toString(16)
+    // console.log(hex);
 
 
+    // test  = "b"
+    // dec = decodeInt(test);
 
+    // console.log(dec);
 
-
-
+    var ret = parseInt(enHex,16);
 
 
 

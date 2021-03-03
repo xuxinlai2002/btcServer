@@ -1,6 +1,9 @@
 {
-    "num":163,
+    "num":50,
     "step":200,
+    "maxFileNum":5000000,
+    "subNum":1,
+    "jsonPath":"./output/",
     "redisPath":"/Users/xuxinlai/ela/btcServer/redis/",
     "txtFile":"/Users/xuxinlai/ela/btcServer/txt/",
     "okFile":"/Users/xuxinlai/ela/btcServer/rok/",

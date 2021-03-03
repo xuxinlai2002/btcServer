@@ -17,9 +17,12 @@
   },
   "homepage": "https://github.com/xuxinlai2002/btcServer#readme",
   "dependencies": {
+    "@chainlink/external-adapter": "^0.2.3",
+    "base58check": "^2.0.0",
     "fs": "0.0.1-security",
     "int-encoder": "^1.1.1",
     "mysql": "^2.18.1",
-    "redis": "^3.0.2"
+    "redis": "^3.0.2",
+    "request": "^2.88.2"
   }
 }

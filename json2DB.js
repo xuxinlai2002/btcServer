@@ -50,7 +50,7 @@ async function readEachJson2DB(){
     await getConnection();
     const totalCnt = arr.length;
 
-    for(var i = 0 ;i < totalCnt  ;i ++){
+    for(var i = 0 ;i < totalCnt ;i ++){
 
         const txJson = JSON.parse(arr[i]);
         const is_coinbase = txJson["is_coinbase"] ? 1:0;

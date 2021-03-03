@@ -66,5 +66,42 @@ https://blog.csdn.net/wppwpp1/article/details/108109464
 
 
 
+cat testStr.txt | redis-cli --pipe
+
+----------------------------------------------
+redis-cli hgetall out > out.txt
+redis-cli hgetall addr2Bal > addr2Bal.txt
+-----------------------------------------------
+
+cat filename | head -n 50 | tail -n +10  显示10行到50行
+
+
+15.
+select count(*) from address_balance
+select count(*) from (select count(*) from tx_addresses GROUP BY address) temp
+
+select address,sum(value) as val from tx_addresses GROUP BY address
+order by val desc
+
+16.
+node redisData.js 0
+
+node redisSortTxByAddress.js 0
+node redisResult 0
+node txAddresses2DB.js 0
+
+17.
+
+redis-cli --pipe
+
+
+
+cat /Users/xuxinlai/ela/btcServer/bk/rok/sum-150000-159999-1-addr2Bal-00000.txt | redis-cli --pipe
+cat /Users/xuxinlai/ela/btcServer/bk/rok/sum-150000-159999-1-out-00000.txt | redis-cli --pipe
+
+
+
+
+
 
 

@@ -9,14 +9,14 @@ const releaseConnection = require('./db').releaseConnection;
 async function main() {
 
     console.time('total ');
-    await getConnection();
+    // await getConnection();
 
-    await query("truncate txs",[]);
-    await query("truncate tx_inputs",[]);
-    await query("truncate tx_outputs",[]);
-    await query("truncate tx_addresses",[]);
+    // await query("truncate txs",[]);
+    // await query("truncate tx_inputs",[]);
+    // await query("truncate tx_outputs",[]);
+    // await query("truncate tx_addresses",[]);
 
-    await releaseConnection();
+    // await releaseConnection();
 
     const cmd = "redis-cli flushall"
     processLine.execSync(cmd, [], { encoding : 'utf8' });

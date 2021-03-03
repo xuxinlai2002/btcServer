@@ -1,8 +1,0 @@
-{
-    "num":8,
-    "step":100,
-    "redisPath":"/Users/xuxinlai/ela/btcServer/redis/",
-    "txtFile":"/Users/xuxinlai/ela/btcServer/txt/",
-    "okFile":"/Users/xuxinlai/ela/btcServer/rok/",
-    "errFile":"/Users/xuxinlai/ela/btcServer/rerr/"
-}

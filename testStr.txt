@@ -1,1 +1,3 @@
-set b4 myTest1
+HSET site redis1 redis.com1
+HSET site redis2 redis.com2
+
