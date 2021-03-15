@@ -1,8 +1,10 @@
 {
-    "num":50,
-    "step":200,
+    "num":100,
+    "step":50,
     "maxFileNum":5000000,
-    "subNum":1,
+    "subNum":2,
+    "addr2BalNum":2,
+    "outNum":9,
     "jsonPath":"./output/",
     "redisPath":"/Users/xuxinlai/ela/btcServer/redis/",
     "txtFile":"/Users/xuxinlai/ela/btcServer/txt/",

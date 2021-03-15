@@ -100,6 +100,16 @@ cat /Users/xuxinlai/ela/btcServer/bk/rok/sum-150000-159999-1-addr2Bal-00000.txt 
 cat /Users/xuxinlai/ela/btcServer/bk/rok/sum-150000-159999-1-out-00000.txt | redis-cli --pipe
 
 
+cat /Users/xuxinlai/ela/btcServer/bk/rok/sum-210000-219999-1-addr2Bal-00000.txt | redis-cli --pipe
+cat /Users/xuxinlai/ela/btcServer/bk/rok/sum-210000-219999-1-addr2Bal-00001.txt | redis-cli --pipe
+cat /Users/xuxinlai/ela/btcServer/bk/rok/sum-210000-219999-1-addr2Bal-00002.txt | redis-cli --pipe
+cat /Users/xuxinlai/ela/btcServer/bk/rok/sum-210000-219999-1-addr2Bal-00003.txt | redis-cli --pipe
+
+cat /Users/xuxinlai/ela/btcServer/bk/rok/sum-210000-219999-1-out-00000.txt | redis-cli --pipe
+cat /Users/xuxinlai/ela/btcServer/bk/rok/sum-210000-219999-1-out-00001.txt | redis-cli --pipe
+
+
+18.
 
 
 

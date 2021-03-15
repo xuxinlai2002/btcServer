@@ -206,14 +206,15 @@ async function dealTx(encodedTx,block_number,block_timestamp,is_coinbase){
 
 async function saveInputs(encodedTx,block_number,block_timestamp){
 
-    //let inputKey = "i" + getBaseKey(txid);
-    //const val = await getRedis(inputKey);
-
-    const val = await hgetRedis("in",encodedTx);
+    var val = await hgetRedis("in",encodedTx);
+    var isMaxValue = false;
     if(val != null){
 
         const arrL1Val = getL1Data(val);
         let txInputCnt = arrL1Val.length;
+        if(txInputCnt == 4500){
+            isMaxValue = true;
+        }
         for(var i = 0 ;i < txInputCnt ; i ++){
             const arrL2Val = getL2Data(arrL1Val[i]);
             const retVal = await getValueFromOutputs(arrL2Val[0],arrL2Val[1]);
@@ -223,6 +224,28 @@ async function saveInputs(encodedTx,block_number,block_timestamp){
             await getEachOutputFromValue(curDeTx,block_number,block_timestamp,0,retVal);
         }
     }
+
+    //
+    if(isMaxValue == true){
+        console.log("come to is max value");
+        val = await hgetRedis("in",encodedTx + ":1");
+        if(val != null){
+
+            const arrL1Val = getL1Data(val);
+            let txInputCnt = arrL1Val.length;
+            for(var i = 0 ;i < txInputCnt ; i ++){
+                const arrL2Val = getL2Data(arrL1Val[i]);
+                const retVal = await getValueFromOutputs(arrL2Val[0],arrL2Val[1]);
+                if(retVal == ""){
+                    return
+                }
+                await getEachOutputFromValue(curDeTx,block_number,block_timestamp,0,retVal);
+            }
+        }
+        isMaxValue = false
+
+    }
+
 }
 
 async function getValueFromOutputs(encodedTx,inSubKey){
@@ -398,9 +421,11 @@ async function setSum(txAddressesAddParams){
 
    }
 
-   //if(val != 'a'){ //not = 0
-   await hsetRedis("addr2Bal",txAddressesAddParams[1],val);
-   //}
+   if(val != 'a'){ //not = 0
+        await hsetRedis("addr2Bal",txAddressesAddParams[1],val);
+   }else{ //delete the record
+        await hdelRedis("addr2Bal",txAddressesAddParams[1]);
+   }
    
 //   await hsetRedis("out",curInTx + curInSubKey,encodedHlen + ";" + encodeInt(curDeValue));
 

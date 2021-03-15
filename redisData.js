@@ -78,6 +78,10 @@ async function readEachInput2Redis(outFile){
     const totalCnt = arr.length;
     var resultVal = "";
     out = [];
+
+    var eachCnt = 1 ;
+    var isMaxCnt = false;
+    var isAddPreIndex = false;
     for(var i = 0 ;i < totalCnt  ; i ++){
 
         let outArr = arr[i].split(";")
@@ -87,8 +91,14 @@ async function readEachInput2Redis(outFile){
         
         if(resultVal == ""){
             resultVal = outVal
+            eachCnt = 1;
         }else{
             resultVal = resultVal + ":" + outVal;
+            eachCnt ++;
+
+            if(eachCnt > 4501){
+                isMaxCnt = true;
+            }
         }
 
         if(i + 1 < totalCnt){
@@ -96,9 +106,23 @@ async function readEachInput2Redis(outFile){
             let outKeyNext = encodeTx(outArrNext[0])
 
             if(outKeyNext != outKey){
-                setKeyVal("in",outKey,resultVal);
+                if(isAddPreIndex == true){
+                    setKeyVal("in",outKey + ":1",resultVal);
+                    isAddPreIndex = false;
+                }else{
+                    setKeyVal("in",outKey,resultVal);
+                }
                 resultVal = ""
             }
+            if(isMaxCnt == true){
+                setKeyVal("in",outKey,resultVal);
+                resultVal = ""
+
+                isAddPreIndex = true;
+                isMaxCnt = false;
+            }
+
+
         }else{
             setKeyVal("in",outKey,resultVal);
             resultVal = ""
@@ -146,7 +170,7 @@ async function readTxt2Redis(){
 }
 
 readTxt2Redis().then(() => {
-    console.log("finish json2Txt ...");
+    console.log("finish redisData ...");
     exit(0);
   }).catch((e) => {
     console.log("error", e.message);

@@ -39,21 +39,21 @@ async function txAddresses2DB(){
   await query("truncate address_balance",[]);
 
 
-  var fromNum = startNum;
-  for(var z = 0 ; z < totalNum ;z ++){
+  // var fromNum = startNum;
+  // for(var z = 0 ; z < totalNum ;z ++){
 
-    var toNum = fromNum + step - 1;
-    console.log(fromNum + " : " + toNum);
+  //   var toNum = fromNum + step - 1;
+  //   console.log(fromNum + " : " + toNum);
 
-    const loadTxsData = 'LOAD DATA LOCAL INFILE ? INTO TABLE tx_addresses FIELDS TERMINATED BY ";" (txid,address,value,isIn,block_number,block_timestamp)'
-    let fullTxsFile = okFile + fromNum + "-" + toNum + "-" + "tx_address"  + ".txt";    
+  //   const loadTxsData = 'LOAD DATA LOCAL INFILE ? INTO TABLE tx_addresses FIELDS TERMINATED BY ";" (txid,address,value,isIn,block_number,block_timestamp)'
+  //   let fullTxsFile = okFile + fromNum + "-" + toNum + "-" + "tx_address"  + ".txt";    
     
-    //console.log(fullTxsFile);
-    await query(loadTxsData,[fullTxsFile]);
-    fromNum = fromNum + step
-    //console.log(fullTxsFile + " " + z);
+  //   //console.log(fullTxsFile);
+  //   await query(loadTxsData,[fullTxsFile]);
+  //   fromNum = fromNum + step
+  //   //console.log(fullTxsFile + " " + z);
 
-  }
+  // }
 
 
   for(var i = 0 ;i < subNum ;i ++){
