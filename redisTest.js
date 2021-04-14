@@ -16,6 +16,8 @@ var en = require('int-encoder');
 var decodeInt = require('./heler').decodeInt
 //redis
 const getRedis = require('./redis').get
+const hsetRedis = require('./redis').hset
+const hgetRedis = require('./redis').hget
 const delRedis = require('./redis').del;
 //const { fstat } = require('fs');
 var encodeTx = require("./heler").encodeTx;
@@ -30,6 +32,12 @@ async function main() {
 
     console.time('total ');
 
+
+    await hsetRedis("test","a","b");
+    const test = await  hgetRedis("test","a");
+    console.log(test);
+
+    
     //await loadRedis(0)
     // for(var i = 0 ;i < 20000 ;i ++){
     //     await getRedis("3488a6f1569e535");
@@ -86,8 +94,8 @@ async function main() {
     // console.log(testArr.length);
 
 
-    let baseKey = encodeTx("faee460f6325e56a0c470ff48978f0b731f5b3512153a3da5cf94d06d8c0e759");
-    console.log(baseKey);
+    // let baseKey = encodeTx("faee460f6325e56a0c470ff48978f0b731f5b3512153a3da5cf94d06d8c0e759");
+    // console.log(baseKey);
     // Uint8Array
 
     // const data = "b4";
