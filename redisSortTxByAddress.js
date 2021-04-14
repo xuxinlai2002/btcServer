@@ -212,7 +212,7 @@ async function saveInputs(encodedTx,block_number,block_timestamp){
 
         const arrL1Val = getL1Data(val);
         let txInputCnt = arrL1Val.length;
-        if(txInputCnt == 4500){
+        if(txInputCnt == 4200){
             isMaxValue = true;
         }
         for(var i = 0 ;i < txInputCnt ; i ++){
@@ -256,8 +256,9 @@ async function getValueFromOutputs(encodedTx,inSubKey){
 
     var findKey = encodedTx + inSubKey
     val = await hgetRedis("out",findKey);
+
     if(val == null){
-        console.log("input not found " + findKey);
+        console.log("input not found " + findKey + " : " + curDeTx + ": " + inSubKey);
         return ""
     }
     //

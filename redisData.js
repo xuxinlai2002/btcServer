@@ -96,7 +96,7 @@ async function readEachInput2Redis(outFile){
             resultVal = resultVal + ":" + outVal;
             eachCnt ++;
 
-            if(eachCnt > 4501){
+            if(eachCnt > 4201){
                 isMaxCnt = true;
             }
         }
