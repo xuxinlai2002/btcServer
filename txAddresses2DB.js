@@ -34,7 +34,8 @@ if(arguments.length != 2){
 
 
 async function txAddresses2DB(){
-    
+  
+  console.time('total ');
   await getConnection();
 
   if(isRset == 1){
@@ -70,7 +71,7 @@ async function txAddresses2DB(){
   }
 
    console.log("total dump number : " + totalDumpNum);
-
+   console.timeEnd('total ');  
 
   // for(var i = 0 ;i < subNum ;i ++){
 
