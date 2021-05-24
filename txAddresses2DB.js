@@ -36,39 +36,39 @@ async function txAddresses2DB(){
   if(isRset == 1){
     await query("truncate tx_addresses",[]);
   }
-  await query("truncate address_balance",[]);
+  // await query("truncate address_balance",[]);
 
 
-  // var fromNum = startNum;
-  // for(var z = 0 ; z < totalNum ;z ++){
+  var fromNum = startNum;
+  for(var z = 0 ; z < totalNum ;z ++){
 
-  //   var toNum = fromNum + step - 1;
-  //   console.log(fromNum + " : " + toNum);
+    var toNum = fromNum + step - 1;
+    console.log(fromNum + " : " + toNum);
 
-  //   const loadTxsData = 'LOAD DATA LOCAL INFILE ? INTO TABLE tx_addresses FIELDS TERMINATED BY ";" (txid,address,value,isIn,block_number,block_timestamp)'
-  //   let fullTxsFile = okFile + fromNum + "-" + toNum + "-" + "tx_address"  + ".txt";    
+    const loadTxsData = 'LOAD DATA LOCAL INFILE ? INTO TABLE tx_addresses FIELDS TERMINATED BY ";" (txid,address,value,isIn,block_number,block_timestamp)'
+    let fullTxsFile = okFile + fromNum + "-" + toNum + "-" + "tx_address"  + ".txt";    
     
-  //   //console.log(fullTxsFile);
-  //   await query(loadTxsData,[fullTxsFile]);
-  //   fromNum = fromNum + step
-  //   //console.log(fullTxsFile + " " + z);
-
-  // }
-
-
-  for(var i = 0 ;i < subNum ;i ++){
-
-
-    var endNum = startNum + totalNum * step -1;
-    const loadAddrData = 'LOAD DATA LOCAL INFILE ? INTO TABLE address_balance FIELDS TERMINATED BY ";" (address,value)'
-    let fullAddressTxsFile = okFile + "sum-" + startNum + "-" + endNum + "-2-" + "addr2Bal-" + prefixInteger(i,5)  + ".txt";    
-    
-    //console.log(fullAddressTxsFile);
-
-    await query(loadAddrData,[fullAddressTxsFile]);
+    //console.log(fullTxsFile);
+    await query(loadTxsData,[fullTxsFile]);
+    fromNum = fromNum + step
     //console.log(fullTxsFile + " " + z);
 
   }
+
+
+  // for(var i = 0 ;i < subNum ;i ++){
+
+
+  //   var endNum = startNum + totalNum * step -1;
+  //   const loadAddrData = 'LOAD DATA LOCAL INFILE ? INTO TABLE address_balance FIELDS TERMINATED BY ";" (address,value)'
+  //   let fullAddressTxsFile = okFile + "sum-" + startNum + "-" + endNum + "-2-" + "addr2Bal-" + prefixInteger(i,5)  + ".txt";    
+    
+  //   //console.log(fullAddressTxsFile);
+
+  //   await query(loadAddrData,[fullAddressTxsFile]);
+  //   //console.log(fullTxsFile + " " + z);
+
+  // }
 
   await releaseConnection();
 
