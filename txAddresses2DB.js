@@ -14,6 +14,10 @@ const prefixInteger = require("./heler").prefixInteger;
 const config = require('./config.json');
 const okFile = config["okFile"];
 const step = config["step"];
+
+var processLine = require('child_process');
+
+
 var startNum = 0;
 const totalNum = config["num"];
 const subNum = config["subNum"];
@@ -40,20 +44,32 @@ async function txAddresses2DB(){
 
 
   var fromNum = startNum;
+  var totalDumpNum = 0;
   for(var z = 0 ; z < totalNum ;z ++){
 
     var toNum = fromNum + step - 1;
-    console.log(fromNum + " : " + toNum);
+    
 
     const loadTxsData = 'LOAD DATA LOCAL INFILE ? INTO TABLE tx_addresses FIELDS TERMINATED BY ";" (txid,address,value,isIn,block_number,block_timestamp)'
     let fullTxsFile = okFile + fromNum + "-" + toNum + "-" + "tx_address"  + ".txt";    
     
     //console.log(fullTxsFile);
     await query(loadTxsData,[fullTxsFile]);
+
+    //
+    var cmd = "wc -l " + fullTxsFile + " | awk '{print $1}'"
+    var curDumpNum = parseInt(processLine.execSync(cmd, [], { encoding : 'utf8' }).toString()) + 1;
+   
+    console.log(fromNum + " : " + toNum + " : " + curDumpNum);
+   
+
+    totalDumpNum = totalDumpNum + parseInt(curDumpNum);
     fromNum = fromNum + step
     //console.log(fullTxsFile + " " + z);
 
   }
+
+   console.log("total dump number : " + totalDumpNum);
 
 
   // for(var i = 0 ;i < subNum ;i ++){
