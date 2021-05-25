@@ -21,7 +21,7 @@ var processLine = require('child_process');
 var startNum = 0;
 const totalNum = config["num"];
 const subNum = config["subNum"];
-var isRset = 0;
+var dbIndex = "zz";
 
 var arguments = process.argv.splice(2);
 if(arguments.length != 2){
@@ -29,7 +29,7 @@ if(arguments.length != 2){
     return 0;
 }else{
     startNum = parseInt(arguments[0]);
-    isRset = parseInt(arguments[1]);
+    dbIndex = arguments[1];
 }
 
 
@@ -38,9 +38,9 @@ async function txAddresses2DB(){
   console.time('total ');
   await getConnection();
 
-  if(isRset == 1){
-    await query("truncate tx_addresses",[]);
-  }
+  // if(isRset == 1){
+  //   await query("truncate tx_addresses",[]);
+  // }
   // await query("truncate address_balance",[]);
 
 
@@ -50,8 +50,8 @@ async function txAddresses2DB(){
 
     var toNum = fromNum + step - 1;
     
-
-    const loadTxsData = 'LOAD DATA LOCAL INFILE ? INTO TABLE tx_addresses FIELDS TERMINATED BY ";" (txid,address,value,isIn,block_number,block_timestamp)'
+    var txAddress = "tx_addresses" + dbIndex;
+    const loadTxsData = 'LOAD DATA LOCAL INFILE ? INTO TABLE ' + txAddress + ' FIELDS TERMINATED BY ";" (txid,address,value,isIn,block_number,block_timestamp)'
     let fullTxsFile = okFile + fromNum + "-" + toNum + "-" + "tx_address"  + ".txt";    
     
     //console.log(fullTxsFile);
