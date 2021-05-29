@@ -7,8 +7,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `tx_addresses02`;
 CREATE TABLE `tx_addresses02` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `txid` varchar(65) NOT NULL COMMENT '交易hash',
-  `address` varchar(65) DEFAULT NULL COMMENT '地址',
+  `address` varchar(32) DEFAULT NULL COMMENT '地址',
   `value` bigint(16) DEFAULT NULL COMMENT '值',
   `isIn` smallint(1) DEFAULT NULL COMMENT '是否是收入 0:支出 1:收入',
   `block_number` bigint(16) DEFAULT NULL COMMENT '区块高度',

@@ -359,7 +359,7 @@ async function getEachOutputFromValue(curDeTx,block_number,block_timestamp,isIn,
 
     //add multiple address exception
     if(addresses.indexOf(",") != -1){
-        console.log("output multiple addresses : tx=" + curDeTx);
+        // console.log("output multiple addresses : tx=" + curDeTx);
         arrErr.push(txAddressesAddParamsStr);
     }else{    
         arrOK.push(txAddressesAddParamsStr);

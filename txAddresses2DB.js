@@ -51,7 +51,7 @@ async function txAddresses2DB(){
     var toNum = fromNum + step - 1;
     
     var txAddress = "tx_addresses" + dbIndex;
-    const loadTxsData = 'LOAD DATA LOCAL INFILE ? INTO TABLE ' + txAddress + ' FIELDS TERMINATED BY ";" (txid,address,value,isIn,block_number,block_timestamp)'
+    const loadTxsData = 'LOAD DATA LOCAL INFILE ? INTO TABLE ' + txAddress + ' FIELDS TERMINATED BY ";" (address,value,isIn,block_number,block_timestamp)'
     let fullTxsFile = okFile + fromNum + "-" + toNum + "-" + "tx_address"  + ".txt";    
     
     //console.log(fullTxsFile);
